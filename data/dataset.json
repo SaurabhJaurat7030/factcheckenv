@@ -1,0 +1,84 @@
+[
+  {
+    "task": "easy",
+    "documents": [
+      {"id": 1, "text": "Refunds are allowed within 7 days"},
+      {"id": 2, "text": "Shipping takes 3-5 days"}
+    ],
+    "question": "What is the refund policy?",
+    "answer": "Refunds are allowed within 7 days",
+    "source": 1
+  },
+  {
+    "task": "medium",
+    "documents": [
+      {"id": 1, "text": "Support is available 24/7"},
+      {"id": 2, "text": "Email support response time is 24 hours"}
+    ],
+    "question": "When is support available?",
+    "answer": "Support is available 24/7",
+    "source": 1
+  },
+  {
+    "task": "hard",
+    "documents": [
+      {"id": 1, "text": "Refunds are allowed within 7 days"},
+      {"id": 2, "text": "Old policy: refunds allowed within 10 days"},
+      {"id": 3, "text": "Policy updated in 2024: refund window reduced to 7 days"}
+    ],
+    "question": "What is the current refund policy?",
+    "answer": "Refunds are allowed within 7 days",
+    "source": 1
+  },
+
+
+
+  {
+    "task": "advanced",
+    "documents": [
+      {"id": 1, "text": "Delivery takes 5 days for standard users"},
+      {"id": 2, "text": "Premium users get delivery in 2 days"},
+      {"id": 3, "text": "Premium subscription costs $10/month"}
+    ],
+    "question": "How fast is delivery for premium users?",
+    "answer": "Premium users get delivery in 2 days",
+    "source": 2,
+    "sources": [2]
+  },
+  {
+    "task": "advanced",
+    "documents": [
+      {"id": 1, "text": "Support is available Monday to Friday"},
+      {"id": 2, "text": "Weekend support is available for premium users"},
+      {"id": 3, "text": "Premium users have 24/7 support access"}
+    ],
+    "question": "Do premium users get weekend support?",
+    "answer": "Yes, premium users get weekend support",
+    "source": 3,
+    "sources": [2, 3]
+  },
+  {
+    "task": "advanced",
+    "documents": [
+      {"id": 1, "text": "Refunds allowed within 7 days"},
+      {"id": 2, "text": "Refund policy updated: now only within 5 days"},
+      {"id": 3, "text": "Latest update 2025: refunds allowed within 5 days"}
+    ],
+    "question": "What is the latest refund policy?",
+    "answer": "Refunds are allowed within 5 days",
+    "source": 3,
+    "sources": [3]
+  },
+  {
+  "task": "hard",
+  "documents": [
+    {"id": 1, "text": "Standard delivery takes 5 days"},
+    {"id": 2, "text": "Premium users get delivery in 2 days"},
+    {"id": 3, "text": "Note: Premium delivery applies only to subscribed users"},
+    {"id": 4, "text": "Old policy: delivery time was 3 days for all users"}
+  ],
+  "question": "How fast is delivery for premium users?",
+  "answer": "Premium users get delivery in 2 days",
+  "source": 2
+  }
+]
