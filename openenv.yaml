@@ -1,4 +1,4 @@
-name: knowledge-qa-env
+name: factcheckenv
 description: >
   An OpenEnv environment for evaluating grounded question answering
   and fact verification using document-based reasoning.

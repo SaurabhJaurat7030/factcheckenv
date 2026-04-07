@@ -117,8 +117,8 @@ AVERAGE: 0.73
 ### 1. Clone repository
 
 ```bash
-git clone <your-repo-link>
-cd knowledge-qa-env
+git clone https://gitlab.com/SaurabhJaurat7030/factcheckenv.git
+cd factcheckenv
 ```
 
 ### 2. Create virtual environment
