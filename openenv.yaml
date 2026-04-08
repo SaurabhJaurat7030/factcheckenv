@@ -46,4 +46,4 @@ reward:
     and grounding of answer in provided documents.
 
 environment:
-  entry_point: env.environment:KnowledgeQAEnv
+  entry_point: env.environment:FactCheckEnv

@@ -80,5 +80,15 @@
   "question": "How fast is delivery for premium users?",
   "answer": "Premium users get delivery in 2 days",
   "source": 2
+  },
+  {
+  "task": "hard",
+  "documents": [
+    {"id": 1, "text": "Shipping takes 5 days"},
+    {"id": 2, "text": "Support is available 24/7"}
+  ],
+  "question": "What is the refund policy?",
+  "answer": "Not enough information",
+  "source": null
   }
 ]

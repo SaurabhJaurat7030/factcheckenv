@@ -8,11 +8,11 @@ class TaskLoader:
             self.data = json.load(f)
 
     def get_task(self, difficulty="easy"):
-        # filter tasks by difficulty
+        # filtering tasks by difficulty
         filtered = [item for item in self.data if item["task"] == difficulty]
 
         if not filtered:
             raise ValueError(f"No tasks found for difficulty: {difficulty}")
 
-        # pick random task
+        # picking random task
         return random.choice(filtered)

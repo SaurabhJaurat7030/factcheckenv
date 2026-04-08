@@ -17,11 +17,11 @@ def grade_hard(predicted_answer, predicted_source, correct_answer, correct_sourc
     predicted_answer = predicted_answer.lower()
     correct_answer = correct_answer.lower()
 
-    # Answer correctness
+    # Checking Answer correctness
     if correct_answer in predicted_answer:
         score += 0.5
 
-    # Source correctness
+    # Checking Source correctness
     if predicted_source == correct_source:
         score += 0.5
 

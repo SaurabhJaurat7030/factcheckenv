@@ -2,6 +2,8 @@
 
 This project serves as a lightweight benchmark for evaluating grounded QA and hallucination control in LLM agents.
 
+---
+
 ## 📌 Overview
 
 This project implements an OpenEnv-compliant environment for evaluating grounded question answering (QA) and fact verification using document-based reasoning.
@@ -24,6 +26,8 @@ This environment benchmarks an agent’s ability to:
 * Provide **factually correct answers**
 * Ensure **grounded responses with evidence**
 * Handle **conflicting or outdated information**
+
+This environment also evaluates an agent’s ability to avoid hallucination by enforcing strict grounding in provided evidence.
 
 ---
 
@@ -56,7 +60,9 @@ The reward is computed based on:
 ---
 
 ## 🎯 Tasks
+
 > All tasks use deterministic grading to ensure reproducibility and consistent benchmarking.
+
 ### 🟢 Easy — Retrieval
 
 * Identify the correct document
@@ -71,6 +77,18 @@ The reward is computed based on:
 * Answer correctly
 * Cite correct source
 * Handle conflicting information
+
+---
+
+## 🚫 No-Answer Handling
+
+The environment includes scenarios where no correct answer exists in the provided documents.
+
+Agents must correctly respond with:
+
+> **"Not enough information"**
+
+This tests the model’s ability to avoid hallucination — a critical real-world requirement.
 
 ---
 
@@ -104,11 +122,11 @@ Final score is normalized between **0.0 and 1.0**
 
 EASY: 1.0
 MEDIUM: 1.0
-HARD: 0.2
+HARD: ~0.7
 
-AVERAGE: 0.73
+AVERAGE: ~0.9
 
-> The lower performance on hard tasks demonstrates real-world challenges in multi-document reasoning, where models must ignore outdated information and select the most relevant evidence.
+> The variation in hard task performance highlights real-world challenges in multi-document reasoning, especially when handling conflicting or incomplete information.
 
 ---
 
@@ -163,8 +181,8 @@ python main.py
 
 **Windows:**
 
-```bash
-set OPENAI_API_KEY=your_api_key
+```PowerShell
+$env:OPENAI_API_KEY="your_api_key"
 ```
 
 **Mac/Linux:**
@@ -179,6 +197,8 @@ export OPENAI_API_KEY=your_api_key
 python baseline.py
 ```
 
+> API keys are not stored in the repository for security reasons.
+
 ---
 
 ## 🐳 Docker Usage
@@ -186,13 +206,13 @@ python baseline.py
 ### Build:
 
 ```bash
-docker build -t qa-env .
+docker build -t factcheckenv .
 ```
 
 ### Run:
 
 ```bash
-docker run qa-env
+docker run factcheckenv
 ```
 
 ---
@@ -212,11 +232,13 @@ This environment fully implements OpenEnv specifications:
 * Multi-task evaluation (easy → hard)
 
 ---
+
 ## 🧠 Design Philosophy
 
-- Simple but scalable environment
-- Deterministic and reproducible evaluation
-- Focus on real-world LLM failure cases (hallucination, outdated knowledge)
+* Simple but scalable environment
+* Deterministic and reproducible evaluation
+* Focus on real-world LLM failure cases (hallucination, outdated knowledge)
+
 ---
 
 ## 🚀 Future Improvements
@@ -235,10 +257,14 @@ No API keys are stored in the repository.
 
 ---
 
+## 🏆 Impact
+
 This environment can be extended into a full benchmark suite for evaluating LLM reliability in real-world applications.
+
+---
 
 ## 👨‍💻 Author
 
-Saurabh Jaurat
+**Saurabh Jaurat**
 
 ---
