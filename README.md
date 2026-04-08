@@ -1,3 +1,12 @@
+---
+title: FactCheck OpenEnv
+emoji: 🤖
+colorFrom: blue
+colorTo: green
+sdk: docker
+pinned: false
+---
+
 # Knowledge QA Environment (OpenEnv)
 
 This project serves as a lightweight benchmark for evaluating grounded QA and hallucination control in LLM agents.

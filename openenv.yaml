@@ -1,4 +1,11 @@
-name: factcheckenv
+---
+title: FactCheck OpenEnv
+emoji: 🤖
+colorFrom: blue
+colorTo: green
+sdk: docker
+pinned: false
+---
 description: >
   An OpenEnv environment for evaluating grounded question answering
   and fact verification using document-based reasoning.
