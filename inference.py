@@ -50,7 +50,7 @@ def main():
     success = False
 
     try:
-        obs = env.reset("hard")  # evaluate hardest task
+        obs = env.reset("hard")  # hardest task
 
         prompt = f"""
 You are an AI assistant performing grounded question answering.
@@ -89,14 +89,21 @@ Source: ...
             f"[STEP] step={step} action={action.answer} reward={reward.score:.2f} done={str(done).lower()} error=null"
         )
 
-        score = max(0.0, min(sum(rewards), 1.0))
+        # ✅ FIXED SCORE (STRICT RANGE)
+        score = sum(rewards)
+
+        if score <= 0.0:
+            score = 0.01
+        elif score >= 1.0:
+            score = 0.99
+
         success = score >= 0.5
 
     except Exception as e:
         print(
-            f"[STEP] step=1 action=error reward=0.00 done=true error={str(e)}"
+            f"[STEP] step=1 action=error reward=0.01 done=true error={str(e)}"
         )
-        score = 0.0
+        score = 0.01
         success = False
 
     print(

@@ -1,16 +1,18 @@
 from env.models import Observation, Action, Reward
 from env.tasks import TaskLoader
+from env.grader import grade_easy, grade_medium, grade_hard
 
 
-# OpenEnv-compatible environment for grounded QA and fact verification
 class FactCheckEnv:
     def __init__(self):
         self.loader = TaskLoader()
         self.current_task = None
         self.done = False
         self.history = []
+        self.current_difficulty = None
 
     def reset(self, difficulty="easy"):
+        self.current_difficulty = difficulty
         self.current_task = self.loader.get_task(difficulty)
         self.done = False
         self.history = []
@@ -25,67 +27,46 @@ class FactCheckEnv:
         if self.done:
             raise Exception("Episode already finished. Call reset().")
 
-        correct_answer = self.current_task["answer"].lower()
+        correct_answer = (self.current_task["answer"] or "").lower()
         correct_source = self.current_task["source"]
 
-        predicted_answer = action.answer.lower()
+        predicted_answer = (action.answer or "").lower()
         predicted_source = action.source
 
-        score = 0.0
         feedback = []
 
-        # NO-ANSWER HANDLING
+        # NO-ANSWER CASE
         if correct_source is None:
             if "not enough information" in predicted_answer:
-                score = 1.0
+                score = 0.99
                 feedback.append("Correctly identified missing information")
             else:
-                score = 0.0
+                score = 0.01
                 feedback.append("Should have said no information available")
 
-            self.done = True
-
-            observation = Observation(
-                documents=self.current_task["documents"],
-                question=self.current_task["question"],
-                history=self.history + [action.answer]
-            )
-
-            reward = Reward(
-                score=score,
-                feedback=", ".join(feedback)
-            )
-
-            return observation, reward, self.done, {}
-
-        # Checking Answer correctness 
-        if correct_answer in predicted_answer:
-            score += 0.5
-            feedback.append("Correct answer")
         else:
-            feedback.append("Incorrect answer")
+            # 🔥 USE GRADERS (MANDATORY)
+            if self.current_difficulty == "easy":
+                score = grade_easy(predicted_source, correct_source)
 
-        # Checking Source correctness
-        if predicted_source == correct_source:
-            score += 0.3
-            feedback.append("Correct source")
-        else:
-            feedback.append("Incorrect source")
+            elif self.current_difficulty == "medium":
+                score = grade_medium(predicted_answer, correct_answer)
 
-        # Checking Groundness
-        source_doc = next(
-            (doc for doc in self.current_task["documents"] if doc["id"] == correct_source),
-            None
-        )
+            elif self.current_difficulty == "hard":
+                score = grade_hard(
+                    predicted_answer,
+                    predicted_source,
+                    correct_answer,
+                    correct_source
+                )
+            else:
+                score = 0.5  # fallback (safe)
 
-        if source_doc and correct_answer in source_doc["text"].lower():
-            score += 0.2
-            feedback.append("Answer grounded in document")
-
-        # Hallucination penalty
-        if correct_answer not in predicted_answer:
-            score -= 0.3
-            feedback.append("Possible hallucination")
+        # 🔥 FINAL SAFETY (CRITICAL)
+        if score <= 0.0:
+            score = 0.01
+        elif score >= 1.0:
+            score = 0.99
 
         self.done = True
 
@@ -96,8 +77,8 @@ class FactCheckEnv:
         )
 
         reward = Reward(
-            score=max(0.0, min(score, 1.0)),
-            feedback=", ".join(feedback)
+            score=score,
+            feedback=", ".join(feedback) if feedback else "Evaluation completed"
         )
 
         return observation, reward, self.done, {}
