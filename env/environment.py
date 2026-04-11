@@ -12,8 +12,15 @@ class FactCheckEnv:
         self.current_difficulty = None
 
     def reset(self, difficulty="easy"):
+        if difficulty not in ["easy", "medium", "hard"]:
+            difficulty = "easy"
+
         self.current_difficulty = difficulty
         self.current_task = self.loader.get_task(difficulty)
+
+        if not self.current_difficulty:
+            self.current_difficulty = self.current_task.get("task", "easy")
+
         self.done = False
         self.history = []
 
@@ -27,15 +34,18 @@ class FactCheckEnv:
         if self.done:
             raise Exception("Episode already finished. Call reset().")
 
-        correct_answer = (self.current_task["answer"] or "").lower()
-        correct_source = self.current_task["source"]
+        if not self.current_difficulty:
+            self.current_difficulty = self.current_task.get("task", "easy")
+
+        correct_answer = (self.current_task.get("answer") or "").lower()
+        correct_source = self.current_task.get("source")
 
         predicted_answer = (action.answer or "").lower()
         predicted_source = action.source
 
         feedback = []
 
-        # NO-ANSWER CASE
+ 
         if correct_source is None:
             if "not enough information" in predicted_answer:
                 score = 0.99
@@ -45,7 +55,7 @@ class FactCheckEnv:
                 feedback.append("Should have said no information available")
 
         else:
-            # 🔥 USE GRADERS (MANDATORY)
+
             if self.current_difficulty == "easy":
                 score = grade_easy(predicted_source, correct_source)
 
@@ -59,10 +69,10 @@ class FactCheckEnv:
                     correct_answer,
                     correct_source
                 )
-            else:
-                score = 0.5  # fallback (safe)
 
-        # 🔥 FINAL SAFETY (CRITICAL)
+            else:
+                score = 0.5
+
         if score <= 0.0:
             score = 0.01
         elif score >= 1.0:
