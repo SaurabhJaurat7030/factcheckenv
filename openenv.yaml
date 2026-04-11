@@ -5,6 +5,8 @@ colorFrom: blue
 colorTo: green
 sdk: docker
 pinned: false
+tags:
+  - openenv
 ---
 description: >
   An OpenEnv environment for evaluating grounded question answering
