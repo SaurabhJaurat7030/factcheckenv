@@ -11,15 +11,21 @@ class FactCheckEnv:
         self.history = []
         self.current_difficulty = None
 
+        self.graders = {
+            "easy": grade_easy,
+            "medium": grade_medium,
+            "hard": grade_hard
+        }
+
+    def get_tasks(self):
+        return ["easy", "medium", "hard"]
+
     def reset(self, difficulty="easy"):
-        if difficulty not in ["easy", "medium", "hard"]:
+        if difficulty not in self.get_tasks():
             difficulty = "easy"
 
         self.current_difficulty = difficulty
         self.current_task = self.loader.get_task(difficulty)
-
-        if not self.current_difficulty:
-            self.current_difficulty = self.current_task.get("task", "easy")
 
         self.done = False
         self.history = []
@@ -34,9 +40,6 @@ class FactCheckEnv:
         if self.done:
             raise Exception("Episode already finished. Call reset().")
 
-        if not self.current_difficulty:
-            self.current_difficulty = self.current_task.get("task", "easy")
-
         correct_answer = (self.current_task.get("answer") or "").lower()
         correct_source = self.current_task.get("source")
 
@@ -45,7 +48,6 @@ class FactCheckEnv:
 
         feedback = []
 
- 
         if correct_source is None:
             if "not enough information" in predicted_answer:
                 score = 0.99
@@ -55,15 +57,16 @@ class FactCheckEnv:
                 feedback.append("Should have said no information available")
 
         else:
+            grader = self.graders.get(self.current_difficulty)
 
             if self.current_difficulty == "easy":
-                score = grade_easy(predicted_source, correct_source)
+                score = grader(predicted_source, correct_source)
 
             elif self.current_difficulty == "medium":
-                score = grade_medium(predicted_answer, correct_answer)
+                score = grader(predicted_answer, correct_answer)
 
             elif self.current_difficulty == "hard":
-                score = grade_hard(
+                score = grader(
                     predicted_answer,
                     predicted_source,
                     correct_answer,
@@ -71,7 +74,7 @@ class FactCheckEnv:
                 )
 
             else:
-                score = 0.5
+                score = 0.5  # fallback safe
 
         if score <= 0.0:
             score = 0.01
