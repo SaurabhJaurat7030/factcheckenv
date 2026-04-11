@@ -40,19 +40,10 @@ def parse_response(text):
     return Action(answer=answer, source=source)
 
 
-def main():
-    env = FactCheckEnv()
+def run_single_task(env, difficulty, step):
+    obs = env.reset(difficulty)
 
-    print(f"[START] task={TASK_NAME} env={BENCHMARK} model={MODEL_NAME}")
-
-    rewards = []
-    step = 1
-    success = False
-
-    try:
-        obs = env.reset("hard")  # hardest task
-
-        prompt = f"""
+    prompt = f"""
 You are an AI assistant performing grounded question answering.
 
 STRICT INSTRUCTIONS:
@@ -72,26 +63,42 @@ Answer: ...
 Source: ...
 """
 
-        response = client.responses.create(
-            model=MODEL_NAME,
-            input=prompt,
-            temperature=0
-        )
+    response = client.responses.create(
+        model=MODEL_NAME,
+        input=prompt,
+        temperature=0
+    )
 
-        text = response.output[0].content[0].text
-        action = parse_response(text)
+    text = response.output[0].content[0].text
+    action = parse_response(text)
 
-        obs, reward, done, _ = env.step(action)
+    obs, reward, done, _ = env.step(action)
 
-        rewards.append(reward.score)
+    print(
+        f"[STEP] step={step} task={difficulty} action={action.answer} reward={reward.score:.2f} done=true error=null"
+    )
 
-        print(
-            f"[STEP] step={step} action={action.answer} reward={reward.score:.2f} done={str(done).lower()} error=null"
-        )
+    return reward.score
 
-        # ✅ FIXED SCORE (STRICT RANGE)
-        score = sum(rewards)
 
+def main():
+    env = FactCheckEnv()
+
+    print(f"[START] task={TASK_NAME} env={BENCHMARK} model={MODEL_NAME}")
+
+    rewards = []
+    step = 1
+
+    try:
+        # 🔥 RUN ALL 3 TASKS (CRITICAL FIX)
+        for difficulty in ["easy", "medium", "hard"]:
+            score = run_single_task(env, difficulty, step)
+            rewards.append(score)
+            step += 1
+
+        score = sum(rewards) / len(rewards)
+
+        # enforce strict range
         if score <= 0.0:
             score = 0.01
         elif score >= 1.0:
@@ -107,7 +114,7 @@ Source: ...
         success = False
 
     print(
-        f"[END] success={str(success).lower()} steps={step} score={score:.2f} rewards={','.join([f'{r:.2f}' for r in rewards])}"
+        f"[END] success={str(success).lower()} steps={step-1} score={score:.2f} rewards={','.join([f'{r:.2f}' for r in rewards])}"
     )
 
 
