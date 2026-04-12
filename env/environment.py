@@ -20,8 +20,17 @@ class FactCheckEnv:
     def get_tasks(self):
         return ["easy", "medium", "hard"]
 
-    def reset(self, difficulty="easy"):
-        if difficulty not in self.get_tasks():
+    def reset(self, difficulty=None):
+        task_list = ["easy", "medium", "hard"]
+
+        if not hasattr(self, "_task_index"):
+            self._task_index = 0
+
+        if difficulty is None:
+            difficulty = task_list[self._task_index % len(task_list)]
+            self._task_index += 1
+
+        if difficulty not in task_list:
             difficulty = "easy"
 
         self.current_difficulty = difficulty
