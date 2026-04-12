@@ -67,14 +67,13 @@ Source: <document id number>
         )
         text = response.choices[0].message.content
     except Exception as e:
-        # Fallback: use a deterministic answer if API fails
         text = "Answer: Not enough information\nSource: null"
 
     action = parse_response(text)
     obs, reward, done, _ = env.step(action)
 
     print(
-        f"[STEP] step={step} task={difficulty} action={action.answer} reward={reward.score:.2f} done=true error=null"
+        f"[STEP] step={step} task={difficulty} grader=grade_{difficulty} action={action.answer} reward={reward.score:.2f} done=true error=null"
     )
 
     return reward.score
@@ -105,7 +104,7 @@ def main():
 
     except Exception as e:
         print(
-            f"[STEP] step=1 task=error action=error reward=0.01 done=true error={str(e)}"
+            f"[STEP] step=1 task=error grader=none action=error reward=0.01 done=true error={str(e)}"
         )
         score = 0.01
         success = False
