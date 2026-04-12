@@ -19,12 +19,15 @@ author: Saurabh-Jaurat
 tasks:
   - name: easy
     description: Retrieve the correct document for a given question
+    grader: env.grader:grade_easy
 
   - name: medium
     description: Answer a question using provided documents
+    grader: env.grader:grade_medium
 
   - name: hard
-    description: Answer a question and cite the correct source, handling conflicting information
+    description: Answer a question and cite the correct source
+    grader: env.grader:grade_hard
 
 observation_space:
   type: object
