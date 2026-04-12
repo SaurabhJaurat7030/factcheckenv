@@ -73,7 +73,8 @@ Source: <document id number>
     obs, reward, done, _ = env.step(action)
 
     print(
-        f"[STEP] step={step} task={difficulty} grader=grade_{difficulty} action={action.answer} reward={reward.score:.2f} done=true error=null"
+        f"[STEP] step={step} action={action.answer} reward={reward.score:.2f} done=true error=null",
+        flush=True
     )
 
     return reward.score
@@ -82,7 +83,7 @@ Source: <document id number>
 def main():
     env = FactCheckEnv()
 
-    print(f"[START] task={TASK_NAME} env={BENCHMARK} model={MODEL_NAME}")
+    print(f"[START] task={TASK_NAME} env={BENCHMARK} model={MODEL_NAME}", flush=True)
 
     rewards = []
     step = 1
@@ -104,14 +105,16 @@ def main():
 
     except Exception as e:
         print(
-            f"[STEP] step=1 task=error grader=none action=error reward=0.01 done=true error={str(e)}"
+            f"[STEP] step=1 action=error reward=0.01 done=true error={str(e)}",
+            flush=True
         )
         score = 0.01
         success = False
         rewards = [0.01]
 
     print(
-        f"[END] success={str(success).lower()} steps={step-1} score={score:.2f} rewards={','.join([f'{r:.2f}' for r in rewards])}"
+        f"[END] success={str(success).lower()} steps={step-1} score={score:.2f} rewards={','.join([f'{r:.2f}' for r in rewards])}",
+        flush=True
     )
 
 
