@@ -46,7 +46,15 @@ def create_app():
 
     @app.get("/reset")
     @app.post("/reset")
-    def reset(task_id: str = "easy"):
+    async def reset(request: Request, task_id: str = "easy"):
+        # Also try to read task_id from POST body
+        if request.method == "POST":
+            try:
+                body = await request.json()
+                task_id = body.get("task_id", task_id)
+            except:
+                pass
+        
         env = FactCheckEnv()
         obs = env.reset(task_id)
         return {
