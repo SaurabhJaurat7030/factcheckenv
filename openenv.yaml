@@ -10,17 +10,17 @@ tasks:
   - id: easy
     name: easy
     description: Retrieve the correct document for a given question
-    grader: grade_easy
+    grader: env.grader:grade_easy
 
   - id: medium
     name: medium
     description: Answer a question using provided documents
-    grader: grade_medium
+    grader: env.grader:grade_medium
 
   - id: hard
     name: hard
     description: Answer a question and cite the correct source
-    grader: grade_hard
+    grader: env.grader:grade_hard
 
 environment:
   entry_point: env.environment:FactCheckEnv
