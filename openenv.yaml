@@ -1,20 +1,13 @@
----
-title: FactCheck OpenEnv
-emoji: 🤖
-colorFrom: blue
-colorTo: green
-sdk: docker
-pinned: false
-tags:
-  - openenv
----
+name: FactCheckEnv
+version: "1.0"
 description: >
   An OpenEnv environment for evaluating grounded question answering
   and fact verification using document-based reasoning.
 
-version: 1.0
-
 author: Saurabh-Jaurat
+
+environment:
+  entry_point: env.environment:FactCheckEnv
 
 tasks:
   - name: easy
@@ -56,6 +49,3 @@ reward:
   description: >
     Reward is based on answer correctness, source correctness,
     and grounding of answer in provided documents.
-
-environment:
-  entry_point: env.environment:FactCheckEnv

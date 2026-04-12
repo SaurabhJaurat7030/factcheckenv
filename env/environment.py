@@ -18,7 +18,23 @@ class FactCheckEnv:
         }
 
     def get_tasks(self):
-        return ["easy", "medium", "hard"]
+        return [
+            {
+                "name": "easy",
+                "description": "Retrieve the correct document for a given question",
+                "grader": grade_easy,
+            },
+            {
+                "name": "medium",
+                "description": "Answer a question using provided documents",
+                "grader": grade_medium,
+            },
+            {
+                "name": "hard",
+                "description": "Answer a question and cite the correct source",
+                "grader": grade_hard,
+            },
+        ]
 
     def reset(self, difficulty=None):
         task_list = ["easy", "medium", "hard"]
@@ -83,7 +99,7 @@ class FactCheckEnv:
                 )
 
             else:
-                score = 0.5  # fallback safe
+                score = 0.5
 
         if score <= 0.0:
             score = 0.01
