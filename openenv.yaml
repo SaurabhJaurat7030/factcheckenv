@@ -1,10 +1,16 @@
-spec_version: 1
-name: factcheckenv
-type: environment
-runtime: docker
-app: server.app:app
-port: 7860
+---
+title: FactCheck OpenEnv
+emoji: 🤖
+colorFrom: blue
+colorTo: green
+sdk: docker
+pinned: false
+tags:
+  - openenv
+---
 
+name: factcheckenv
+version: "1.0"
 description: >
   An OpenEnv environment for evaluating grounded question answering
   and fact verification using document-based reasoning.
@@ -15,14 +21,39 @@ tasks:
   - id: easy
     name: easy
     description: Retrieve the correct document for a given question
-    grader: env.grader:grade_easy
+    grader: grade_easy
 
   - id: medium
     name: medium
     description: Answer a question using provided documents
-    grader: env.grader:grade_medium
+    grader: grade_medium
 
   - id: hard
     name: hard
-    description: Answer a question and cite the correct source with conflict resolution
-    grader: env.grader:grade_hard
+    description: Answer a question and cite the correct source
+    grader: grade_hard
+
+observation_space:
+  type: object
+  properties:
+    documents:
+      type: array
+    question:
+      type: string
+    history:
+      type: array
+
+action_space:
+  type: object
+  properties:
+    answer:
+      type: string
+    source:
+      type: integer
+
+reward:
+  type: float
+  range: [0.0, 1.0]
+
+environment:
+  entry_point: env.environment:FactCheckEnv

@@ -5,7 +5,31 @@ import uvicorn
 
 
 def create_app():
-    app = FastAPI()
+    app = FastAPI(title="FactCheckEnv")
+
+    TASKS = [
+        {
+            "id": "easy",
+            "name": "easy",
+            "description": "Retrieve the correct document for a given question",
+            "grader": "grade_easy",
+            "difficulty": "easy"
+        },
+        {
+            "id": "medium",
+            "name": "medium",
+            "description": "Answer a question using provided documents",
+            "grader": "grade_medium",
+            "difficulty": "medium"
+        },
+        {
+            "id": "hard",
+            "name": "hard",
+            "description": "Answer a question, cite source, resolve conflicts",
+            "grader": "grade_hard",
+            "difficulty": "hard"
+        }
+    ]
 
     @app.get("/health")
     def health():
@@ -13,32 +37,12 @@ def create_app():
 
     @app.get("/")
     def home():
-        return {"status": "running"}
+        return {"status": "running", "tasks": len(TASKS)}
 
     @app.get("/tasks")
+    @app.post("/tasks")
     def get_tasks():
-        return {
-            "tasks": [
-                {
-                    "id": "easy",
-                    "name": "easy",
-                    "description": "Retrieve the correct document for a given question",
-                    "grader": "env.grader:grade_easy"
-                },
-                {
-                    "id": "medium",
-                    "name": "medium",
-                    "description": "Answer a question using provided documents",
-                    "grader": "env.grader:grade_medium"
-                },
-                {
-                    "id": "hard",
-                    "name": "hard",
-                    "description": "Answer a question and cite the correct source with conflict resolution",
-                    "grader": "env.grader:grade_hard"
-                }
-            ]
-        }
+        return {"tasks": TASKS}
 
     @app.get("/reset")
     @app.post("/reset")
@@ -46,6 +50,7 @@ def create_app():
         env = FactCheckEnv()
         obs = env.reset(task_id)
         return {
+            "task_id": task_id,
             "documents": obs.documents,
             "question": obs.question,
             "history": obs.history
@@ -55,7 +60,8 @@ def create_app():
     async def step(request: Request):
         data = await request.json()
         env = FactCheckEnv()
-        env.reset(data.get("task_id", "easy"))
+        task_id = data.get("task_id", "easy")
+        env.reset(task_id)
         action = Action(
             answer=data.get("answer", ""),
             source=data.get("source", None)
@@ -68,13 +74,15 @@ def create_app():
                 "history": obs.history
             },
             "reward": reward.score,
+            "feedback": reward.feedback,
             "done": done,
             "info": info
         }
 
     @app.get("/state")
+    @app.post("/state")
     def state():
-        return {"state": "no active session"}
+        return {"state": "ready", "tasks": [t["id"] for t in TASKS]}
 
     return app
 
