@@ -1,5 +1,4 @@
 import json
-import random
 
 
 class TaskLoader:
@@ -7,12 +6,34 @@ class TaskLoader:
         with open(data_path, "r") as f:
             self.data = json.load(f)
 
-    def get_task(self, difficulty="easy"):
-        # filtering tasks by difficulty
-        filtered = [item for item in self.data if item["task"] == difficulty]
+        # 🔥 group tasks by difficulty (ONLY required ones)
+        self.grouped = {
+            "easy": [],
+            "medium": [],
+            "hard": []
+        }
 
-        if not filtered:
+        for item in self.data:
+            task_type = item.get("task")
+
+            if task_type in self.grouped:
+                self.grouped[task_type].append(item)
+
+        # 🔥 deterministic index tracking
+        self.indices = {
+            "easy": 0,
+            "medium": 0,
+            "hard": 0
+        }
+
+    def get_task(self, difficulty="easy"):
+        tasks = self.grouped.get(difficulty, [])
+
+        if not tasks:
             raise ValueError(f"No tasks found for difficulty: {difficulty}")
 
-        # picking random task
-        return random.choice(filtered)
+        # 🔥 deterministic cycling (NO randomness)
+        index = self.indices[difficulty] % len(tasks)
+        self.indices[difficulty] += 1
+
+        return tasks[index]
